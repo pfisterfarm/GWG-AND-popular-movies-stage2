@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Popular Movies</string>
+    <string name="no_network_title">Network Unavailable</string>
+    <string name="no_network_text">Please connect to a network in order to use this application</string>
+    <string name="fetch_popular_failure">onFailure called after trying to fetch popular movies</string>
+    <string name="fetch_toprated_failure">onFailure called after trying to fetch top rated movies</string>
+    <string name="OK_text">OK</string>
+    <string name="iso_date_format">yyyy-MM-dd</string>
+    <string name="api_base_url">http://api.themoviedb.org/3/</string>
+    <string name="menu_popular">Popular</string>
+    <string name="menu_top_rated">Top Rated</string>
+    <string name="menu_favorites">Favorites</string>
+    <string name="released_label">Released:</string>
+    <string name="overview_label">Overview:</string>
+</resources>
