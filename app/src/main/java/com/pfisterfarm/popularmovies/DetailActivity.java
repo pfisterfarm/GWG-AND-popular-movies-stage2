@@ -7,7 +7,14 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.pfisterfarm.popularmovies.models.Movie;
+import com.pfisterfarm.popularmovies.models.Review;
+import com.pfisterfarm.popularmovies.models.Reviews;
+import com.pfisterfarm.popularmovies.models.Trailer;
+import com.pfisterfarm.popularmovies.models.Trailers;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class DetailActivity extends AppCompatActivity {
@@ -16,11 +23,15 @@ public class DetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         final String MOVIE_KEY = "movie";
+        final String TRAILER_KEY = "trailer";
+        final String REVIEW_KEY = "review";
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
         Movie detailMovie = getIntent().getParcelableExtra(MOVIE_KEY);
+        ArrayList<Trailer> trailers = getIntent().getParcelableArrayListExtra(TRAILER_KEY);
+        ArrayList<Review> reviews = getIntent().getParcelableArrayListExtra(REVIEW_KEY);
 
         setTitle(detailMovie.getMovieTitle());
 
