@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
   private static final String logTag = "POPMOVIES";
   private static final String trailerStr = "trailer";
   private static final String reviewStr = "review";
+  private static final String movieIdStr = "movie_id";
 
 
   @Override
@@ -86,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
           popularMovies = new ArrayList<Movie>();
           topRatedMovies = new ArrayList<Movie>();
           trailers = new ArrayList<Trailer>();
-          reviews = new ArrayList<Review>();
+//          reviews = new ArrayList<Review>();
 
           if (helpers.isOnline(getApplicationContext())) {
                 loadData();
@@ -120,65 +121,45 @@ public class MainActivity extends AppCompatActivity {
       gridView.invalidate();    // force update on initial load
 
       gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-          Intent detailIntent = new Intent(MainActivity.this, DetailActivity.class);
-          long movieId;
-          switch (displayMode) {
-            case POPULAR:
-              detailIntent.putExtra(MOVIE_KEY, popularMovies.get(i));
-              movieId = popularMovies.get(i).getId();
-              break;
-            case TOPRATED:
-              detailIntent.putExtra(MOVIE_KEY, topRatedMovies.get(i));
-              movieId = topRatedMovies.get(i).getId();
-              break;
-          }
-          Call<Trailers> call = tmdbService.fetchTrailers(movieId, sApiKey);
-          call.enqueue(new Callback<Trailers>() {
-
-                       @Override
-                       public void onResponse(Call<Trailers> call, Response<Trailers> response) {
-                           List<Trailer> returnList = response.body().getResults();
-                           trailers.clear();
-                           for (Trailer oneTrailer : returnList) {
-                               if (oneTrailer.getVideoKey().endsWith("Trailer")) {
-                                   trailers.add(oneTrailer);
-                               }
-                           }
-                       }
-
-                       @Override
-                       public void onFailure(Call<Trailers> call, Throwable t) {
-                           Log.e(logTag, "onFailure trying to fetch trailers");
-                           t.printStackTrace();
-                       }
-
-                       ;
-                   });
-
-          Call<Reviews> call2 = tmdbService.fetchReviews(movieId, sApiKey);
-          call2.enqueue(new Callback<Reviews>() {
-
-                  @Override
-                  public void onResponse(Call<Reviews> call, Response<Reviews> response) {
-                      List<Review> returnList = response.body().getResults();
-                      reviews.clear();
-                      reviews.addAll(returnList);
-                  }
-
-                  @Override
-                  public void onFailure(Call<Reviews> call, Throwable t) {
-                      Log.e(logTag, "onFailure trying to fetch reviews");
-                      t.printStackTrace();
-                  };
-          });
-
-          detailIntent.putParcelableArrayListExtra(trailerStr, trailers);
-          detailIntent.putParcelableArrayListExtra(reviewStr, reviews);
-          startActivity(detailIntent);
-        }
-      );
+                                          @Override
+                                          public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                              Intent detailIntent = new Intent(MainActivity.this, DetailActivity.class);
+                                              long movieId = 0;
+                                              switch (displayMode) {
+                                                  case POPULAR:
+                                                      detailIntent.putExtra(MOVIE_KEY, popularMovies.get(i));
+                                                      movieId = popularMovies.get(i).getId();
+                                                      break;
+                                                  case TOPRATED:
+                                                      detailIntent.putExtra(MOVIE_KEY, topRatedMovies.get(i));
+                                                      movieId = topRatedMovies.get(i).getId();
+                                                      break;
+                                              }
+//
+//                                              Call<Reviews> call2 = tmdbService.fetchReviews(movieId, sApiKey);
+//                                              call2.enqueue(new Callback<Reviews>() {
+//
+//                                                  @Override
+//                                                  public void onResponse(Call<Reviews> call, Response<Reviews> response) {
+//                                                      List<Review> returnList = response.body().getResults();
+//                                                      reviews.clear();
+//                                                      reviews.addAll(returnList);
+//                                                  }
+//
+//                                                  @Override
+//                                                  public void onFailure(Call<Reviews> call, Throwable t) {
+//                                                      Log.e(logTag, "onFailure trying to fetch reviews");
+//                                                      t.printStackTrace();
+//                                                  }
+//
+//                                                  ;
+//                                              });
+                                              Log.i(logTag, "about to put movieId: " + movieId);
+                                              Log.i(logTag, "key used is: " + movieIdStr);
+                                              detailIntent.putExtra(movieIdStr, movieId);
+                                              startActivity(detailIntent);
+                                          }
+                                      });
 
       android.support.design.widget.BottomNavigationView bottomNav = (android.support.design.widget.BottomNavigationView) findViewById(R.id.bottom_nav);
 
