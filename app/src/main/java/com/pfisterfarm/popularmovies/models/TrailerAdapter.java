@@ -1,8 +1,11 @@
 package com.pfisterfarm.popularmovies.models;
 
 import android.app.Activity;
+import android.content.Context;
+import android.media.Image;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,31 +21,56 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
-public class TrailerAdapter extends ArrayAdapter<Trailer> {
+public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.trailerViewHolder> {
 
-    public TrailerAdapter(Activity context, ArrayList<Trailer> trailerArray) {
-        super(context,0, trailerArray);
+    private int mNumberTrailers;
+
+    private ArrayList<Trailer> mTrailers;
+
+    public TrailerAdapter(int numberOfTrailers) {
+        mNumberTrailers = numberOfTrailers;
     }
 
-    @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+    public trailerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.trailer_element, parent, false);
+        TrailerAdapter.trailerViewHolder viewHolder = new TrailerAdapter.trailerViewHolder(view);
+        return viewHolder;
+    }
 
-        Trailer thisTrailer = getItem(position);
+    @Override
+    public void onBindViewHolder(trailerViewHolder holder, int position) {
+        holder.bind(position, holder.trailerThumb.getContext());
+    }
 
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.trailer_element, parent, false);
+    @Override
+    public int getItemCount() {
+        return mNumberTrailers;
+    }
+
+    public void setTrailers(ArrayList<Trailer> incomingTrailers) {
+        mTrailers = incomingTrailers;
+        notifyDataSetChanged();
+    }
+
+    class trailerViewHolder extends RecyclerView.ViewHolder {
+        ImageView trailerThumb;
+        TextView trailerName;
+
+        public trailerViewHolder(View itemView) {
+            super(itemView);
+
+            trailerThumb = (ImageView) itemView.findViewById(R.id.trailer_thumbnail);
+            trailerName = (TextView) itemView.findViewById(R.id.trailer_name);
+
         }
 
-        ImageView trailerView = (ImageView) convertView.findViewById(R.id.trailer_thumbnail);
-        Picasso.with(getContext()).
-                load(helpers.makeTrailerURL(thisTrailer.getVideoKey())).
-                fit().
-                into(trailerView);
-
-        TextView trailerName = (TextView) convertView.findViewById(R.id.trailer_name);
-        trailerName.setText(thisTrailer.getVideoName());
-
-        return convertView;
+        void bind(int listIndex, Context context) {
+            trailerName.setText(mTrailers.get(listIndex).getVideoName());
+            Picasso.with(context).
+                    load(helpers.makeTrailerURL(mTrailers.get(listIndex).getVideoKey())).
+                    fit().
+                    into(trailerThumb);
+        }
     }
 }

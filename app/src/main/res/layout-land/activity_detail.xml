@@ -82,10 +82,29 @@
         app:layout_constraintTop_toBottomOf="@id/overview_label"
         tools:text="@tools:sample/lorem/random" />
 
-    <ListView
-        android:id="@+id/trailers_listview"
+    <TextView
+        android:id="@+id/trailers_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Trailers:"
+        android:paddingLeft="16dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/overview_tv" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/trailers_rv"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:paddingLeft="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/trailers_label" />
 
 </android.support.constraint.ConstraintLayout>
 </ScrollView>

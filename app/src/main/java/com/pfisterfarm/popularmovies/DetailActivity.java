@@ -2,8 +2,11 @@ package com.pfisterfarm.popularmovies;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -35,6 +38,10 @@ public class DetailActivity extends AppCompatActivity {
 
     tmdbInterface tmdbService = tmdbClient.getClient().create(tmdbInterface.class);
 
+    ArrayList<Trailer> trailers;
+    RecyclerView mTrailersRecycler;
+    TrailerAdapter mAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -46,17 +53,20 @@ public class DetailActivity extends AppCompatActivity {
 
         long movieId = 0;
 
-        ArrayList<Trailer> trailers;
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
+        mTrailersRecycler = (RecyclerView) findViewById(R.id.trailers_rv);
+        LinearLayoutManager layoutMgr = new LinearLayoutManager(this);
+        mTrailersRecycler.setLayoutManager(layoutMgr);
+        mTrailersRecycler.setHasFixedSize(true);
+
         Movie detailMovie = getIntent().getParcelableExtra(MOVIE_KEY);
         movieId = getIntent().getLongExtra(movieIdStr, 0);
-        Log.i(logTag, "movie id received is; " +  movieId);
-        Log.i(logTag, "key used to recieve: " + movieIdStr);
-        trailers = loadTrailers(movieId);
-        Log.i(logTag, "at the start of the detail activity, trailers size is: "  + trailers.size());
+        loadTrailers(movieId);
+
+        Log.i(logTag, "right after call to loadTrailers, size is: "  + trailers.size());
 
         setTitle(detailMovie.getMovieTitle());
 
@@ -78,17 +88,12 @@ public class DetailActivity extends AppCompatActivity {
         tv_overview.setText(detailMovie.getPlotSynopsis());
 
         Log.i(logTag, "at end of detail activity, size; " +  trailers.size());
-        ListView trailersList = (ListView) findViewById(R.id.trailers_listview);
-        TrailerAdapter trailersAdapter = new TrailerAdapter(this, trailers);
-        trailersList.setAdapter(trailersAdapter);
+
     }
 
-    protected ArrayList<Trailer> loadTrailers(long movieId) {
+    protected void loadTrailers(long movieId) {
         Call<Trailers> call = tmdbService.fetchTrailers(Long.toString(movieId), sApiKey);
-        Log.i(logTag, "early on in loadTrailers,");
-        Log.i(logTag, "sApiKey is: " + sApiKey);
-        Log.i(logTag, "movieId is: " + movieId);
-        final ArrayList<Trailer> trailers = new ArrayList<Trailer>();
+        trailers = new ArrayList<Trailer>();
         call.enqueue(new Callback<Trailers>() {
 
             @Override
@@ -106,6 +111,9 @@ public class DetailActivity extends AppCompatActivity {
                     }
                 };
                 Log.i(logTag, "at the end of the loop, size is: " + trailers.size());
+                mAdapter = new TrailerAdapter(trailers.size());
+                mAdapter.setTrailers(trailers);
+                mTrailersRecycler.setAdapter(mAdapter);
             }
 
             @Override
@@ -114,8 +122,5 @@ public class DetailActivity extends AppCompatActivity {
                 t.printStackTrace();
             }
         });
-
-        Log.i(logTag, "size of trailers array is: " + trailers.size());
-        return trailers;
     }
 }
