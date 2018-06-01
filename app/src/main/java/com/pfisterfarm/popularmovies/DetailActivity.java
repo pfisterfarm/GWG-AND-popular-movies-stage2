@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.pfisterfarm.popularmovies.models.Movie;
 import com.pfisterfarm.popularmovies.models.Review;
+import com.pfisterfarm.popularmovies.models.ReviewAdapter;
 import com.pfisterfarm.popularmovies.models.Reviews;
 import com.pfisterfarm.popularmovies.models.Trailer;
 import com.pfisterfarm.popularmovies.models.TrailerAdapter;
@@ -39,15 +40,16 @@ public class DetailActivity extends AppCompatActivity {
     tmdbInterface tmdbService = tmdbClient.getClient().create(tmdbInterface.class);
 
     ArrayList<Trailer> trailers;
+    ArrayList<Review> reviews;
     RecyclerView mTrailersRecycler;
+    RecyclerView mReviewsRecycler;
     TrailerAdapter mAdapter;
+    ReviewAdapter mReviewsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         final String MOVIE_KEY = "movie";
-        final String TRAILER_KEY = "trailer";
-        final String REVIEW_KEY = "review";
         final String logTag = "POPMOVIES";
         final String movieIdStr = "movie_id";
 
@@ -62,11 +64,15 @@ public class DetailActivity extends AppCompatActivity {
         mTrailersRecycler.setLayoutManager(layoutMgr);
         mTrailersRecycler.setHasFixedSize(true);
 
+        mReviewsRecycler = (RecyclerView) findViewById(R.id.reviews_rv);
+        LinearLayoutManager layoutMgrRev = new LinearLayoutManager(this);
+        mReviewsRecycler.setLayoutManager(layoutMgrRev);
+        mReviewsRecycler.setHasFixedSize(true);
+
         Movie detailMovie = getIntent().getParcelableExtra(MOVIE_KEY);
         movieId = getIntent().getLongExtra(movieIdStr, 0);
         loadTrailers(movieId);
-
-        Log.i(logTag, "right after call to loadTrailers, size is: "  + trailers.size());
+        loadReviews(movieId);
 
         setTitle(detailMovie.getMovieTitle());
 
@@ -87,8 +93,6 @@ public class DetailActivity extends AppCompatActivity {
         TextView tv_overview = (TextView) findViewById(R.id.overview_tv);
         tv_overview.setText(detailMovie.getPlotSynopsis());
 
-        Log.i(logTag, "at end of detail activity, size; " +  trailers.size());
-
     }
 
     protected void loadTrailers(long movieId) {
@@ -98,19 +102,13 @@ public class DetailActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call<Trailers> call, Response<Trailers> response) {
-                Log.i(logTag, "got to start of onresponse");
                 List<Trailer> returnList = response.body().getResults();
-                Log.i(logTag, "size of returnList is: " + returnList.size());
                 trailers.clear();
                 for (Trailer oneTrailer : returnList) {
-                    Log.i(logTag, "video name is: " + oneTrailer.getVideoName());
-                    Log.i(logTag, "video type is: " + oneTrailer.getVideoType());
                     if (oneTrailer.getVideoType().contains("Trailer")) {
-                        Log.i(logTag, "this trailer got added!");
                         trailers.add(oneTrailer);
                     }
                 };
-                Log.i(logTag, "at the end of the loop, size is: " + trailers.size());
                 mAdapter = new TrailerAdapter(trailers.size());
                 mAdapter.setTrailers(trailers);
                 mTrailersRecycler.setAdapter(mAdapter);
@@ -118,6 +116,30 @@ public class DetailActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Trailers> call, Throwable t) {
+                Log.e(logTag, "onFailure trying to fetch trailers");
+                t.printStackTrace();
+            }
+        });
+    }
+
+    protected void loadReviews(long movieId) {
+        Call<Reviews> call = tmdbService.fetchReviews(Long.toString(movieId), sApiKey);
+        reviews = new ArrayList<Review>();
+        call.enqueue(new Callback<Reviews>() {
+
+            @Override
+            public void onResponse(Call<Reviews> call, Response<Reviews> response) {
+                List<Review> returnList = response.body().getResults();
+                reviews.clear();
+                reviews.addAll(returnList);
+
+                mReviewsAdapter = new ReviewAdapter(reviews.size());
+                mReviewsAdapter.setReviews(reviews);
+                mReviewsRecycler.setAdapter(mReviewsAdapter);
+            }
+
+            @Override
+            public void onFailure(Call<Reviews> call, Throwable t) {
                 Log.e(logTag, "onFailure trying to fetch trailers");
                 t.printStackTrace();
             }
