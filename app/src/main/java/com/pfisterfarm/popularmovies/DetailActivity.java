@@ -1,10 +1,13 @@
 package com.pfisterfarm.popularmovies;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -20,7 +23,10 @@ import com.pfisterfarm.popularmovies.models.TrailerAdapter;
 import com.pfisterfarm.popularmovies.models.Trailers;
 import com.pfisterfarm.popularmovies.retrofit.tmdbClient;
 import com.pfisterfarm.popularmovies.retrofit.tmdbInterface;
+import com.pfisterfarm.popularmovies.utils.helpers;
 import com.squareup.picasso.Picasso;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +38,7 @@ import retrofit2.Response;
 import static com.pfisterfarm.popularmovies.MainActivity.trailers;
 
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements TrailerAdapter.ListItemClickListener {
 
     final String logTag = "POPMOVIES";
     final String sApiKey = BuildConfig.API_KEY;
@@ -71,7 +77,7 @@ public class DetailActivity extends AppCompatActivity {
 
         Movie detailMovie = getIntent().getParcelableExtra(MOVIE_KEY);
         movieId = getIntent().getLongExtra(movieIdStr, 0);
-        loadTrailers(movieId);
+        loadTrailers(movieId, this);
         loadReviews(movieId);
 
         setTitle(detailMovie.getMovieTitle());
@@ -95,7 +101,7 @@ public class DetailActivity extends AppCompatActivity {
 
     }
 
-    protected void loadTrailers(long movieId) {
+    protected void loadTrailers(long movieId, final TrailerAdapter.ListItemClickListener listener) {
         Call<Trailers> call = tmdbService.fetchTrailers(Long.toString(movieId), sApiKey);
         trailers = new ArrayList<Trailer>();
         call.enqueue(new Callback<Trailers>() {
@@ -109,9 +115,13 @@ public class DetailActivity extends AppCompatActivity {
                         trailers.add(oneTrailer);
                     }
                 };
-                mAdapter = new TrailerAdapter(trailers.size());
+                mAdapter = new TrailerAdapter(trailers.size(), listener);
                 mAdapter.setTrailers(trailers);
                 mTrailersRecycler.setAdapter(mAdapter);
+                if (trailers.size() == 0) {     // if no trailers, don't show the 'Trailers:' label
+                    TextView trailersLabel = (TextView) findViewById(R.id.trailers_label);
+                    trailersLabel.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -136,6 +146,10 @@ public class DetailActivity extends AppCompatActivity {
                 mReviewsAdapter = new ReviewAdapter(reviews.size());
                 mReviewsAdapter.setReviews(reviews);
                 mReviewsRecycler.setAdapter(mReviewsAdapter);
+                if (reviews.size() == 0) {  // if no reviews, don't show the 'Reviews:' label
+                    TextView reviewsLabel = (TextView) findViewById(R.id.reviews_tv);
+                    reviewsLabel.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -144,5 +158,11 @@ public class DetailActivity extends AppCompatActivity {
                 t.printStackTrace();
             }
         });
+    }
+
+    @Override
+    public void onListItemClick(int clickItemIndex) {
+        Intent youtubeIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(helpers.makeYoutubeURL(trailers.get(clickItemIndex).getVideoKey())));
+        startActivity(youtubeIntent);
     }
 }

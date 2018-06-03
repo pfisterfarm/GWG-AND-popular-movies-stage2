@@ -65,4 +65,8 @@ public class helpers {
     public static String makeTrailerURL(String keyString) {
         return "http://img.youtube.com/vi/" + keyString + "/default.jpg";
     }
+
+    public static String makeYoutubeURL(String keyString) {
+        return "https://www.youtube.com/watch?v=" + keyString;
+    }
 }

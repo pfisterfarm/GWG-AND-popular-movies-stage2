@@ -8,6 +8,7 @@
     <ImageView
         android:layout_width="120dp"
         android:layout_height="90dp"
+        android:paddingBottom="16dp"
         tools:src="@tools:sample/avatars"
         android:id="@+id/trailer_thumbnail" />
 
@@ -15,6 +16,7 @@
         android:id="@+id/trailer_name"
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="16dp"
+        android:paddingBottom="16dp"
         tools:text="Official Trailer #1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

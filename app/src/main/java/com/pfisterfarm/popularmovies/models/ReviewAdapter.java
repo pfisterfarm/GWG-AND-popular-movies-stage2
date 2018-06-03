@@ -2,9 +2,7 @@ package com.pfisterfarm.popularmovies.models;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +11,6 @@ import android.widget.TextView;
 import com.pfisterfarm.popularmovies.R;
 
 import java.util.ArrayList;
-import java.util.regex.Pattern;
 
 public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.reviewViewHolder> {
 
@@ -34,7 +31,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.reviewView
 
     @Override
     public void onBindViewHolder(reviewViewHolder holder, int position) {
-        holder.bind(position, holder.reviewLink.getContext());
+        holder.bind(position, holder.reviewAuthor.getContext());
     }
 
     @Override
@@ -48,18 +45,19 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.reviewView
     }
 
     class reviewViewHolder extends RecyclerView.ViewHolder {
-        TextView reviewLink;
+        TextView reviewAuthor;
+        TextView reviewContent;
 
         public reviewViewHolder(View itemView) {
             super(itemView);
 
-            reviewLink = (TextView) itemView.findViewById(R.id.review_author);
-
+            reviewAuthor = (TextView) itemView.findViewById(R.id.review_author);
+            reviewContent = (TextView) itemView.findViewById(R.id.review_content);
         }
 
         void bind(int listIndex, Context context) {
-            reviewLink.setText(mReviews.get(listIndex).getAuthorName());
-            reviewLink.setMovementMethod(LinkMovementMethod.getInstance());
+            reviewAuthor.setText(mReviews.get(listIndex).getAuthorName());
+            reviewContent.setText(mReviews.get(listIndex).getReviewContent());
 
         }
     }

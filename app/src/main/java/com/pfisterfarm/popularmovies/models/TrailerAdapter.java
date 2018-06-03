@@ -27,8 +27,17 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.trailerV
 
     private ArrayList<Trailer> mTrailers;
 
-    public TrailerAdapter(int numberOfTrailers) {
+    final private ListItemClickListener mOnClickListener;
+
+    public interface ListItemClickListener {
+        void onListItemClick(int clickItemIndex);
+    }
+
+    public TrailerAdapter(int numberOfTrailers, ListItemClickListener listener) {
+
         mNumberTrailers = numberOfTrailers;
+        mOnClickListener = listener;
+
     }
 
     @Override
@@ -53,7 +62,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.trailerV
         notifyDataSetChanged();
     }
 
-    class trailerViewHolder extends RecyclerView.ViewHolder {
+    class trailerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView trailerThumb;
         TextView trailerName;
 
@@ -62,6 +71,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.trailerV
 
             trailerThumb = (ImageView) itemView.findViewById(R.id.trailer_thumbnail);
             trailerName = (TextView) itemView.findViewById(R.id.trailer_name);
+            itemView.setOnClickListener(this);
 
         }
 
@@ -71,6 +81,12 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.trailerV
                     load(helpers.makeTrailerURL(mTrailers.get(listIndex).getVideoKey())).
                     fit().
                     into(trailerThumb);
+        }
+
+        @Override
+        public void onClick(View view) {
+            int clickedPosition = getAdapterPosition();
+            mOnClickListener.onListItemClick(clickedPosition);
         }
     }
 }

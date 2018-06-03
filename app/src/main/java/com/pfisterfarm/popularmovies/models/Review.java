@@ -11,17 +11,17 @@ public class Review implements Parcelable {
     @SerializedName("author")
     private String authorName;
 
-    @SerializedName("url")
-    private String reviewUrl;
+    @SerializedName("content")
+    private String reviewContent;
 
-    protected Review(String authorName, String reviewUrl) {
+    protected Review(String authorName, String reviewContent) {
         this.authorName = authorName;
-        this.reviewUrl = reviewUrl;
+        this.reviewContent = reviewContent;
     }
 
     protected Review(Parcel in) {
         this.authorName = in.readString();
-        this.reviewUrl = in.readString();
+        this.reviewContent = in.readString();
     }
 
     public String getAuthorName() {
@@ -32,12 +32,12 @@ public class Review implements Parcelable {
         this.authorName = authorName;
     }
 
-    public String getReviewUrl() {
-        return reviewUrl;
+    public String getReviewContent() {
+        return reviewContent;
     }
 
-    public void setReviewUrl(String reviewUrl) {
-        this.reviewUrl = reviewUrl;
+    public void setReviewContent(String reviewContent) {
+        this.reviewContent = reviewContent;
     }
 
     @Override
@@ -48,7 +48,8 @@ public class Review implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(authorName);
-        parcel.writeString(reviewUrl);
+        parcel.writeString(authorName);
+        parcel.writeString(reviewContent);
     }
 
     public static final Creator<Review> CREATOR = new Creator<Review>() {
