@@ -22,6 +22,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import com.pfisterfarm.popularmovies.models.FavDatabase;
 import com.pfisterfarm.popularmovies.models.Movie;
 import com.pfisterfarm.popularmovies.models.MovieAdapter;
 import com.pfisterfarm.popularmovies.models.Movies;
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
   private static final String sApiKey = BuildConfig.API_KEY;
   private static final int POPULAR = 0;
   private static final int TOPRATED = 1;
+  private static final int FAVORITES = 2;
 
   static ArrayList<Movie> popularMovies;
   static ArrayList<Movie> topRatedMovies;
@@ -46,11 +48,13 @@ public class MainActivity extends AppCompatActivity {
 
   tmdbInterface tmdbService = tmdbClient.getClient().create(tmdbInterface.class);
 
-  MovieAdapter popularMovieAdapter, topRatedMovieAdapter;
+  MovieAdapter popularMovieAdapter, topRatedMovieAdapter, favMovieAdapter;
   GridView gridView;
   Parcelable scrollState;
   public IntentFilter connectIntent;
   public connectBroadcastReceiver connectivityReceiver;
+
+  private FavDatabase mDb;
 
   int displayMode = POPULAR;
   static boolean dataLoaded = false;
@@ -63,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
   private static final String trailerStr = "trailer";
   private static final String reviewStr = "review";
   private static final String movieIdStr = "movie_id";
+  private static final String favoritesStr = "favs";
 
 
   @Override
@@ -73,6 +78,8 @@ public class MainActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     gridView = (GridView) findViewById(R.id.movieGrid);
+
+    mDb = FavDatabase.getInstance(getApplicationContext());
 
     // get a broadcast receiver ready to check if data needs to be loaded when
       // network has just become available
@@ -86,8 +93,8 @@ public class MainActivity extends AppCompatActivity {
                       (savedInstanceState.containsKey(topRatedStr))))) {
           popularMovies = new ArrayList<Movie>();
           topRatedMovies = new ArrayList<Movie>();
+          favMovies = new ArrayList<Movie>();
           trailers = new ArrayList<Trailer>();
-//          reviews = new ArrayList<Review>();
 
           if (helpers.isOnline(getApplicationContext())) {
                 loadData();
@@ -98,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
         displayMode = savedInstanceState.getInt(displayModeStr);
         popularMovies = savedInstanceState.getParcelableArrayList(popularStr);
         topRatedMovies = savedInstanceState.getParcelableArrayList(topRatedStr);
+        favMovies = savedInstanceState.getParcelableArrayList(favoritesStr);
         scrollState = savedInstanceState.getParcelable(scrollPosStr);
         gridView.onRestoreInstanceState(scrollState);
         BottomNavigationView bottNav = (BottomNavigationView) findViewById(R.id.bottom_nav);
@@ -109,14 +117,22 @@ public class MainActivity extends AppCompatActivity {
 
       popularMovieAdapter = new MovieAdapter(this, popularMovies);
       topRatedMovieAdapter = new MovieAdapter(this, topRatedMovies);
+      favMovieAdapter = new MovieAdapter(this, favMovies);
+
 
       switch (displayMode) {
         case POPULAR:
           gridView.setAdapter(popularMovieAdapter);
           break;
+
         case TOPRATED:
           gridView.setAdapter(topRatedMovieAdapter);
           break;
+
+        case FAVORITES:
+            gridView.setAdapter(favMovieAdapter);
+            break;
+
       }
       gridView.invalidate();    // force update on initial load
 
@@ -134,28 +150,11 @@ public class MainActivity extends AppCompatActivity {
                                                       detailIntent.putExtra(MOVIE_KEY, topRatedMovies.get(i));
                                                       movieId = topRatedMovies.get(i).getId();
                                                       break;
+                                                  case FAVORITES:
+                                                      detailIntent.putExtra(MOVIE_KEY, favMovies.get(i));
+                                                      movieId = favMovies.get(i).getId();
+                                                      break;
                                               }
-//
-//                                              Call<Reviews> call2 = tmdbService.fetchReviews(movieId, sApiKey);
-//                                              call2.enqueue(new Callback<Reviews>() {
-//
-//                                                  @Override
-//                                                  public void onResponse(Call<Reviews> call, Response<Reviews> response) {
-//                                                      List<Review> returnList = response.body().getResults();
-//                                                      reviews.clear();
-//                                                      reviews.addAll(returnList);
-//                                                  }
-//
-//                                                  @Override
-//                                                  public void onFailure(Call<Reviews> call, Throwable t) {
-//                                                      Log.e(logTag, "onFailure trying to fetch reviews");
-//                                                      t.printStackTrace();
-//                                                  }
-//
-//                                                  ;
-//                                              });
-                                              Log.i(logTag, "about to put movieId: " + movieId);
-                                              Log.i(logTag, "key used is: " + movieIdStr);
                                               detailIntent.putExtra(movieIdStr, movieId);
                                               startActivity(detailIntent);
                                           }
@@ -180,8 +179,14 @@ public class MainActivity extends AppCompatActivity {
                 gridView.setAdapter(topRatedMovieAdapter);
                 gridView.invalidate();
               }
+              break;
               // favorites menu item is a placeholder until Stage 2
             case R.id.action_favorite:
+                if (displayMode != FAVORITES) {
+                    displaymode = FAVORITES;
+                    gridView.setAdapter(favMovieAdapter);
+                    gridView.invalidate();
+                }
               break;
           }
           return true;
@@ -261,6 +266,7 @@ public class MainActivity extends AppCompatActivity {
     outState.putInt(displayModeStr, displayMode);
     outState.putParcelableArrayList(popularStr, popularMovies);
     outState.putParcelableArrayList(topRatedStr, topRatedMovies);
+    outState.putParcelableArrayList(favoritesStr, favMovies);
     scrollState = gridView.onSaveInstanceState();
     outState.putParcelable(scrollPosStr, scrollState);
     super.onSaveInstanceState(outState);

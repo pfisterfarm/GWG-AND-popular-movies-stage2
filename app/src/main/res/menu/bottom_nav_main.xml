@@ -19,7 +19,7 @@
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_favorite"
-        android:enabled="false"
+        android:enabled="true"
         android:icon="@drawable/ic_favorites"
         android:checkable="true"
         android:checked="false"

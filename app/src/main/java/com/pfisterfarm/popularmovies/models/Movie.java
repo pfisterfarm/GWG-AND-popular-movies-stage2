@@ -1,15 +1,22 @@
 package com.pfisterfarm.popularmovies.models;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
+@Entity(tableName = "favorites")
 public class Movie implements Parcelable {
 
+    @PrimaryKey
     @SerializedName("id")
     private long id;
 
+    @ColumnInfo(name = "title")
     @SerializedName("title")
     private String movieTitle;
 
@@ -18,9 +25,6 @@ public class Movie implements Parcelable {
 
     @SerializedName("poster_path")
     private String posterPath;
-
-    @SerializedName("backdrop_path")
-    private String backdropPath;
 
     @SerializedName("vote_average")
     private float voteAverage;
@@ -33,17 +37,16 @@ public class Movie implements Parcelable {
         this.movieTitle = movieTitle;
         this.releaseDate = releaseDate;
         this.posterPath = posterPath;
-        this.backdropPath = backdropPath;
         this.voteAverage = voteAverage;
         this.plotSynopsis = plotSynopsis;
     }
 
+    @Ignore
     protected Movie(Parcel in) {
         id = in.readLong();
         movieTitle = in.readString();
         releaseDate = in.readString();
         posterPath = in.readString();
-        backdropPath = in.readString();
         voteAverage = in.readFloat();
         plotSynopsis = in.readString();
     }

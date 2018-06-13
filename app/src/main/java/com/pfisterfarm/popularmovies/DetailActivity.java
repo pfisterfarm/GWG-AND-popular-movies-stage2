@@ -8,12 +8,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.pfisterfarm.popularmovies.models.FavDatabase;
 import com.pfisterfarm.popularmovies.models.Movie;
 import com.pfisterfarm.popularmovies.models.Review;
 import com.pfisterfarm.popularmovies.models.ReviewAdapter;
@@ -25,8 +25,6 @@ import com.pfisterfarm.popularmovies.retrofit.tmdbClient;
 import com.pfisterfarm.popularmovies.retrofit.tmdbInterface;
 import com.pfisterfarm.popularmovies.utils.helpers;
 import com.squareup.picasso.Picasso;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +49,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     RecyclerView mReviewsRecycler;
     TrailerAdapter mAdapter;
     ReviewAdapter mReviewsAdapter;
+    private FavDatabase mDb = FavDatabase.getInstance(getApplicationContext());
+    Button favoritesButton = (Button) findViewById(R.id.favButton);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +60,6 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         final String movieIdStr = "movie_id";
 
         long movieId = 0;
-
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
@@ -75,7 +74,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mReviewsRecycler.setLayoutManager(layoutMgrRev);
         mReviewsRecycler.setHasFixedSize(true);
 
-        Movie detailMovie = getIntent().getParcelableExtra(MOVIE_KEY);
+        final Movie detailMovie = getIntent().getParcelableExtra(MOVIE_KEY);
         movieId = getIntent().getLongExtra(movieIdStr, 0);
         loadTrailers(movieId, this);
         loadReviews(movieId);
@@ -98,6 +97,13 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
         TextView tv_overview = (TextView) findViewById(R.id.overview_tv);
         tv_overview.setText(detailMovie.getPlotSynopsis());
+
+        favoritesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mDb.MovieDao().insertFavorite(detailMovie);
+            }
+        });
 
     }
 
