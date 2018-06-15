@@ -14,7 +14,7 @@ public abstract class FavDatabase extends RoomDatabase {
     private static final String DATABASE_NAME = "favorites";
     private static FavDatabase sInstance;
 
-    public static FavDatabase getInstrance(Context context) {
+    public static FavDatabase getInstance(Context context) {
         if (sInstance == null) {
             synchronized (LOCK) {
                 Log.d(TAG, "Creating new database instance");
@@ -25,5 +25,7 @@ public abstract class FavDatabase extends RoomDatabase {
         Log.d(TAG, "Getting the database instance");
         return sInstance;
     }
+
+    public abstract MovieDao movieDao();
 
 }

@@ -23,6 +23,7 @@ import com.pfisterfarm.popularmovies.models.TrailerAdapter;
 import com.pfisterfarm.popularmovies.models.Trailers;
 import com.pfisterfarm.popularmovies.retrofit.tmdbClient;
 import com.pfisterfarm.popularmovies.retrofit.tmdbInterface;
+import com.pfisterfarm.popularmovies.utils.AppExecutors;
 import com.pfisterfarm.popularmovies.utils.helpers;
 import com.squareup.picasso.Picasso;
 
@@ -49,8 +50,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     RecyclerView mReviewsRecycler;
     TrailerAdapter mAdapter;
     ReviewAdapter mReviewsAdapter;
-    private FavDatabase mDb = FavDatabase.getInstance(getApplicationContext());
-    Button favoritesButton = (Button) findViewById(R.id.favButton);
+    private FavDatabase mDb;
+    Button favoritesButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,9 +61,12 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         final String movieIdStr = "movie_id";
 
         long movieId = 0;
+        mDb = FavDatabase.getInstance(getApplicationContext());
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+
+        favoritesButton = (Button) findViewById(R.id.favButton);
 
         mTrailersRecycler = (RecyclerView) findViewById(R.id.trailers_rv);
         LinearLayoutManager layoutMgr = new LinearLayoutManager(this);
@@ -101,10 +105,16 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         favoritesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mDb.MovieDao().insertFavorite(detailMovie);
-            }
-        });
+                AppExecutors.getInstance().diskIO().execute(new Runnable() {
 
+                    @Override
+                    public void run() {
+                        mDb.movieDao().insertFavorite(detailMovie);
+                    }
+                });
+        }
+
+    });
     }
 
     protected void loadTrailers(long movieId, final TrailerAdapter.ListItemClickListener listener) {

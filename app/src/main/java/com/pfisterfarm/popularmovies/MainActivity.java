@@ -1,5 +1,7 @@
 package com.pfisterfarm.popularmovies;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -7,6 +9,7 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,16 +23,14 @@ import java.util.ArrayList;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Response;
 
 import com.pfisterfarm.popularmovies.models.FavDatabase;
+import com.pfisterfarm.popularmovies.models.MovieDao;
 import com.pfisterfarm.popularmovies.models.Movie;
 import com.pfisterfarm.popularmovies.models.MovieAdapter;
 import com.pfisterfarm.popularmovies.models.Movies;
 import com.pfisterfarm.popularmovies.models.Review;
-import com.pfisterfarm.popularmovies.models.Reviews;
 import com.pfisterfarm.popularmovies.models.Trailer;
-import com.pfisterfarm.popularmovies.models.Trailers;
 import com.pfisterfarm.popularmovies.retrofit.tmdbInterface;
 import com.pfisterfarm.popularmovies.retrofit.tmdbClient;
 import com.pfisterfarm.popularmovies.utils.helpers;
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
   static ArrayList<Movie> popularMovies;
   static ArrayList<Movie> topRatedMovies;
+  static ArrayList<Movie> favMovies;
   static ArrayList<Trailer> trailers;
   static ArrayList<Review> reviews;
 
@@ -180,10 +182,9 @@ public class MainActivity extends AppCompatActivity {
                 gridView.invalidate();
               }
               break;
-              // favorites menu item is a placeholder until Stage 2
             case R.id.action_favorite:
                 if (displayMode != FAVORITES) {
-                    displaymode = FAVORITES;
+                    displayMode = FAVORITES;
                     gridView.setAdapter(favMovieAdapter);
                     gridView.invalidate();
                 }
@@ -193,9 +194,24 @@ public class MainActivity extends AppCompatActivity {
         }
       });
 
+      retrieveFavorites();
+
     } catch (Exception e) {
       e.printStackTrace();
     }
+    }
+
+    private void retrieveFavorites() {
+
+      LiveData<List<Movie>> favorites = mDb.movieDao().loadAllFavorites();
+      favorites.observe(this, new Observer<List<Movie>>() {
+
+          @Override
+          public void onChanged(@Nullable List<Movie> movies) {
+              favMovies.clear();
+              favMovies.addAll(movies);
+          }
+      });
     }
 
     @Override

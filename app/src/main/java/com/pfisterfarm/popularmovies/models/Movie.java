@@ -32,7 +32,7 @@ public class Movie implements Parcelable {
     @SerializedName("overview")
     private String plotSynopsis;
 
-    protected Movie(long id, String movieTitle, String releaseDate, String posterPath, String backdropPath, float voteAverage, String plotSynopsis) {
+    public Movie(long id, String movieTitle, String releaseDate, String posterPath, float voteAverage, String plotSynopsis) {
         this.id = id;
         this.movieTitle = movieTitle;
         this.releaseDate = releaseDate;
@@ -59,13 +59,6 @@ public class Movie implements Parcelable {
         return BASE_URL + SIZE + this.posterPath;
     }
 
-    protected String makeBackdropURL() {
-
-        final String BASE_URL = "http://image.tmdb.org/t/p/";
-        final String SIZE = "w185/";
-
-        return BASE_URL + SIZE + this.backdropPath;
-    }
 
     public long getId() {
         return id;
@@ -99,14 +92,6 @@ public class Movie implements Parcelable {
         this.posterPath = posterPath;
     }
 
-    public String getBackdropPAth() {
-        return backdropPath;
-    }
-
-    public void setBackdropPath(String backdropPath) {
-        this.backdropPath = backdropPath;
-}
-
     public float getVoteAverage() {
         return voteAverage;
     }
@@ -130,7 +115,6 @@ public class Movie implements Parcelable {
         dest.writeString(movieTitle);
         dest.writeString(releaseDate);
         dest.writeString(posterPath);
-        dest.writeString(backdropPath);
         dest.writeFloat(voteAverage);
         dest.writeString(plotSynopsis);
     }

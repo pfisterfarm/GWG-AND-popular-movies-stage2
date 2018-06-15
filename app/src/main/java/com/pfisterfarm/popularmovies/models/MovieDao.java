@@ -1,5 +1,6 @@
 package com.pfisterfarm.popularmovies.models;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -12,8 +13,8 @@ import java.util.List;
 @Dao
 public interface MovieDao {
 
-    @Query("SELECT * FROM favorites ORDER BY id")
-    List<Movie> loadAllFavorites();
+    @Query("SELECT * FROM favorites ORDER BY title")
+    LiveData<List<Movie>> loadAllFavorites();
 
     @Insert
     void insertFavorite(Movie movie);
