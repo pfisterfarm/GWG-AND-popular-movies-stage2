@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
   private static final String reviewStr = "review";
   private static final String movieIdStr = "movie_id";
   private static final String favoritesStr = "favs";
+  private static final String dataLoadedStr = "dataLoaded";
 
 
   @Override
@@ -109,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
         topRatedMovies = savedInstanceState.getParcelableArrayList(topRatedStr);
         favMovies = savedInstanceState.getParcelableArrayList(favoritesStr);
         scrollState = savedInstanceState.getParcelable(scrollPosStr);
+        dataLoaded = savedInstanceState.getBoolean(dataLoadedStr);
         gridView.onRestoreInstanceState(scrollState);
         BottomNavigationView bottNav = (BottomNavigationView) findViewById(R.id.bottom_nav);
         if (popularMovies.size() > 0 && topRatedMovies.size() > 0) {
@@ -280,6 +282,7 @@ public class MainActivity extends AppCompatActivity {
   @Override
   public void onSaveInstanceState(Bundle outState) {
     outState.putInt(displayModeStr, displayMode);
+    outState.putBoolean(dataLoadedStr, dataLoaded);
     outState.putParcelableArrayList(popularStr, popularMovies);
     outState.putParcelableArrayList(topRatedStr, topRatedMovies);
     outState.putParcelableArrayList(favoritesStr, favMovies);

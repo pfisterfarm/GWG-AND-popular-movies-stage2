@@ -34,6 +34,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.pfisterfarm.popularmovies.MainActivity.favMovies;
 import static com.pfisterfarm.popularmovies.MainActivity.trailers;
 
 
@@ -52,6 +53,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     ReviewAdapter mReviewsAdapter;
     private FavDatabase mDb;
     Button favoritesButton;
+    boolean favoritedFlag = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +82,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
         final Movie detailMovie = getIntent().getParcelableExtra(MOVIE_KEY);
         movieId = getIntent().getLongExtra(movieIdStr, 0);
+
+        favoritedFlag = checkIfFavorite(movieId);
+
         loadTrailers(movieId, this);
         loadReviews(movieId);
 
@@ -102,6 +107,11 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         TextView tv_overview = (TextView) findViewById(R.id.overview_tv);
         tv_overview.setText(detailMovie.getPlotSynopsis());
 
+        if (!favoritedFlag) {
+            favoritesButton.setText("favorite");
+        } else {
+            favoritesButton.setText("unfavorite");
+        }
         favoritesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -109,7 +119,15 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
                     @Override
                     public void run() {
-                        mDb.movieDao().insertFavorite(detailMovie);
+                        if (!favoritedFlag) {
+                            mDb.movieDao().insertFavorite(detailMovie);
+                            favoritesButton.setText("unfavorite");
+                            favoritedFlag = false;
+                        } else {
+                            mDb.movieDao().deleteFavorite(detailMovie);
+                            favoritesButton.setText("favorite");
+                            favoritedFlag = true;
+                        }
                     }
                 });
         }
@@ -175,6 +193,39 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             }
         });
     }
+
+    public boolean checkIfFavorite(long movieId) {
+        // I had initially set up this method to work by querying the favorites database and
+        // returning true/false if the movieId was found. I can't seem to make it work reliably.
+        // The flag gets set when the database look up completes, which may be after the button text
+        // gets set. I'd rather do it that way, but I don't know how to work out the timing issues.
+        // Unless I found out another way, just looping through the favMovies arrayList
+        for (int i = 0; i < favMovies.size(); i++) {
+            if (favMovies.get(i).getId() == movieId) {
+                return true;
+            }
+        }
+        return false;
+    }
+//    public void checkIfFavorite(final long movieId) {
+//        // This method queries the favorites database to see if the movie has already been favorited.
+//        // Ideally, it would return a boolean value, but I can't figure out how to return a value from
+//        // an AppExecutor call. I have to call a separate method which modifies a member variable. This
+//        // seems like a kludge. Hopefully, I'll be able to correct this before submitting this project
+//        boolean result = false;
+//        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+//
+//            @Override
+//            public void run() {
+//                Movie checkMovie = mDb.movieDao().getMovie(movieId);
+//                setFavoriteFlag(checkMovie != null);
+//            }
+//        });
+//    }
+//
+//    public void setFavoriteFlag(boolean valueToSet) {
+//        favoritedFlag = valueToSet;
+//    }
 
     @Override
     public void onListItemClick(int clickItemIndex) {

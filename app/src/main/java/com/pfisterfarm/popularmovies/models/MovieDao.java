@@ -25,4 +25,7 @@ public interface MovieDao {
     @Delete
     void deleteFavorite(Movie movie);
 
+    @Query("SELECT * FROM favorites WHERE id = :id")
+    Movie getMovie(long id);
+
 }

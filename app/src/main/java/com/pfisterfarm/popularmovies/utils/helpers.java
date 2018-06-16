@@ -6,6 +6,7 @@ import android.net.NetworkInfo;
 import android.support.v7.app.AlertDialog;
 import android.view.MenuItem;
 
+import com.pfisterfarm.popularmovies.models.FavDatabase;
 import com.pfisterfarm.popularmovies.models.Movie;
 import com.pfisterfarm.popularmovies.R;
 
