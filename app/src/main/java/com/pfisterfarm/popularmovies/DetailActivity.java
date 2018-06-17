@@ -42,6 +42,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
     final String logTag = "POPMOVIES";
     final String sApiKey = BuildConfig.API_KEY;
+    final String trailersStr = "trailers";
+    final String reviewsStr = "reviews";
 
     tmdbInterface tmdbService = tmdbClient.getClient().create(tmdbInterface.class);
 
@@ -85,8 +87,15 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
         favoritedFlag = checkIfFavorite(movieId);
 
-        loadTrailers(movieId, this);
-        loadReviews(movieId);
+        if (savedInstanceState == null) {
+            loadTrailers(movieId, this);
+            loadReviews(movieId);
+        } else {
+            trailers = savedInstanceState.getParcelableArrayList(trailersStr);
+            addTrailersToUI(this);
+            reviews = savedInstanceState.getParcelableArrayList(reviewsStr);
+            addReviewToUI();
+        }
 
         setTitle(detailMovie.getMovieTitle());
 
@@ -149,13 +158,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                         trailers.add(oneTrailer);
                     }
                 };
-                mAdapter = new TrailerAdapter(trailers.size(), listener);
-                mAdapter.setTrailers(trailers);
-                mTrailersRecycler.setAdapter(mAdapter);
-                if (trailers.size() == 0) {     // if no trailers, don't show the 'Trailers:' label
-                    TextView trailersLabel = (TextView) findViewById(R.id.trailers_label);
-                    trailersLabel.setVisibility(View.GONE);
-                }
+                addTrailersToUI(listener);
             }
 
             @Override
@@ -164,6 +167,16 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 t.printStackTrace();
             }
         });
+    }
+
+    private void addTrailersToUI(TrailerAdapter.ListItemClickListener listener) {
+        mAdapter = new TrailerAdapter(trailers.size(), listener);
+        mAdapter.setTrailers(trailers);
+        mTrailersRecycler.setAdapter(mAdapter);
+        if (trailers.size() == 0) {     // if no trailers, don't show the 'Trailers:' label
+            TextView trailersLabel = (TextView) findViewById(R.id.trailers_label);
+            trailersLabel.setVisibility(View.GONE);
+        }
     }
 
     protected void loadReviews(long movieId) {
@@ -177,13 +190,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 reviews.clear();
                 reviews.addAll(returnList);
 
-                mReviewsAdapter = new ReviewAdapter(reviews.size());
-                mReviewsAdapter.setReviews(reviews);
-                mReviewsRecycler.setAdapter(mReviewsAdapter);
-                if (reviews.size() == 0) {  // if no reviews, don't show the 'Reviews:' label
-                    TextView reviewsLabel = (TextView) findViewById(R.id.reviews_tv);
-                    reviewsLabel.setVisibility(View.GONE);
-                }
+                addReviewToUI();
             }
 
             @Override
@@ -192,6 +199,23 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 t.printStackTrace();
             }
         });
+    }
+
+    private void addReviewToUI() {
+        mReviewsAdapter = new ReviewAdapter(reviews.size());
+        mReviewsAdapter.setReviews(reviews);
+        mReviewsRecycler.setAdapter(mReviewsAdapter);
+        if (reviews.size() == 0) {  // if no reviews, don't show the 'Reviews:' label
+            TextView reviewsLabel = (TextView) findViewById(R.id.reviews_tv);
+            reviewsLabel.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(trailersStr, trailers);
+        outState.putParcelableArrayList(reviewsStr, reviews);
     }
 
     public boolean checkIfFavorite(long movieId) {

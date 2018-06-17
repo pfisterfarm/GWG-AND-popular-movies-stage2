@@ -2,6 +2,7 @@ package com.pfisterfarm.popularmovies;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +26,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 
 import com.pfisterfarm.popularmovies.models.FavDatabase;
+import com.pfisterfarm.popularmovies.models.FavsViewModel;
 import com.pfisterfarm.popularmovies.models.MovieDao;
 import com.pfisterfarm.popularmovies.models.Movie;
 import com.pfisterfarm.popularmovies.models.MovieAdapter;
@@ -205,8 +207,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void retrieveFavorites() {
 
-      LiveData<List<Movie>> favorites = mDb.movieDao().loadAllFavorites();
-      favorites.observe(this, new Observer<List<Movie>>() {
+      FavsViewModel viewModel = ViewModelProviders.of(this).get(FavsViewModel.class);
+      viewModel.getFavorites().observe(this, new Observer<List<Movie>>() {
 
           @Override
           public void onChanged(@Nullable List<Movie> movies) {
