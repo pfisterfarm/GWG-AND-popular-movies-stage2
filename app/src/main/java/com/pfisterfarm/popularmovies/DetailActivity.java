@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -54,7 +55,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     TrailerAdapter mAdapter;
     ReviewAdapter mReviewsAdapter;
     private FavDatabase mDb;
-    Button favoritesButton;
+    CheckBox favoritesButton;
     boolean favoritedFlag = false;
 
     @Override
@@ -70,7 +71,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        favoritesButton = (Button) findViewById(R.id.favButton);
+        favoritesButton = (CheckBox) findViewById(R.id.favButton);
 
         mTrailersRecycler = (RecyclerView) findViewById(R.id.trailers_rv);
         LinearLayoutManager layoutMgr = new LinearLayoutManager(this);
@@ -117,9 +118,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         tv_overview.setText(detailMovie.getPlotSynopsis());
 
         if (!favoritedFlag) {
-            favoritesButton.setText("favorite");
+            favoritesButton.setChecked(false);
         } else {
-            favoritesButton.setText("unfavorite");
+            favoritesButton.setChecked(true);
         }
         favoritesButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,12 +131,12 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                     public void run() {
                         if (!favoritedFlag) {
                             mDb.movieDao().insertFavorite(detailMovie);
-                            favoritesButton.setText("unfavorite");
-                            favoritedFlag = false;
+//                            favoritesButton.setChecked(false);
+                            favoritedFlag = true;
                         } else {
                             mDb.movieDao().deleteFavorite(detailMovie);
-                            favoritesButton.setText("favorite");
-                            favoritedFlag = true;
+//                            favoritesButton.setChecked(true);
+                            favoritedFlag = false;
                         }
                     }
                 });
