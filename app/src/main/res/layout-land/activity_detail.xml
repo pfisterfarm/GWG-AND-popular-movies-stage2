@@ -52,13 +52,13 @@
     <RatingBar
         android:id="@+id/votes_rb"
         style="?android:attr/ratingBarStyleSmall"
-        android:layout_width="177dp"
+        android:layout_width="wrap_content"
         android:layout_height="21dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginStart="20dp"
+        android:layout_marginLeft="76dp"
+        android:layout_marginStart="76dp"
         android:layout_marginTop="32dp"
-        android:numStars="10"
-        android:stepSize="1.0"
+        android:numStars="5"
+        android:stepSize="0.1"
         app:layout_constraintStart_toEndOf="@+id/poster_detail_iv"
         app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
@@ -66,36 +66,36 @@
         android:id="@+id/overview_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="44dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="28dp"
         android:text="@string/overview_label"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@id/poster_detail_iv"
-        app:layout_constraintTop_toBottomOf="@id/votes_rb"/>
+        app:layout_constraintTop_toBottomOf="@id/votes_rb" />
 
 
     <TextView
         android:id="@+id/overview_tv"
-        android:layout_width="375dp"
-        android:layout_height="304dp"
-        android:padding="16dp"
-        app:layout_constraintStart_toEndOf="@id/poster_detail_iv"
-        app:layout_constraintTop_toBottomOf="@id/overview_label"
+        android:layout_width="384dp"
+        android:layout_height="173dp"
+        android:layout_marginLeft="208dp"
+        android:layout_marginStart="208dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/overview_label"
         tools:text="@tools:sample/lorem/random" />
 
     <TextView
         android:id="@+id/trailers_label"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_height="0dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
         android:text="Trailers:"
-        android:paddingLeft="16dp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/overview_tv" />
+        app:layout_constraintTop_toBottomOf="@+id/poster_detail_iv" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/trailers_rv"
@@ -138,10 +138,9 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="60dp"
         android:layout_marginStart="60dp"
-        android:layout_marginTop="48dp"
         android:button="@drawable/favorite_selector"
         app:layout_constraintStart_toEndOf="@+id/release_date_tv"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/release_date_tv" />
 
 </android.support.constraint.ConstraintLayout>
 </ScrollView>

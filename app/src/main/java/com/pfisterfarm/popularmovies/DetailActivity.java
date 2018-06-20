@@ -112,7 +112,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
         RatingBar ratingBar = (RatingBar) findViewById(R.id.votes_rb);
         ratingBar.setIsIndicator(true);
-        ratingBar.setRating(detailMovie.getVoteAverage());
+        ratingBar.setRating((detailMovie.getVoteAverage() / 2));
 
         TextView tv_overview = (TextView) findViewById(R.id.overview_tv);
         tv_overview.setText(detailMovie.getPlotSynopsis());

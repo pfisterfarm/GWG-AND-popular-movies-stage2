@@ -128,14 +128,17 @@ public class MainActivity extends AppCompatActivity {
 
       switch (displayMode) {
         case POPULAR:
+            setTitle("Popular Movies - Popular");
           gridView.setAdapter(popularMovieAdapter);
           break;
 
         case TOPRATED:
+            setTitle("Popular Movies - Top Rated");
           gridView.setAdapter(topRatedMovieAdapter);
           break;
 
         case FAVORITES:
+            setTitle("Popular Movies - Favorites");
             gridView.setAdapter(favMovieAdapter);
             break;
 
@@ -177,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
                 displayMode = POPULAR;
                 gridView.setAdapter(popularMovieAdapter);
                 gridView.invalidate();
+                setTitle("Popular Movies - Popular");
               }
               break;
             case R.id.action_top_rated:
@@ -184,6 +188,7 @@ public class MainActivity extends AppCompatActivity {
                 displayMode = TOPRATED;
                 gridView.setAdapter(topRatedMovieAdapter);
                 gridView.invalidate();
+                setTitle("Popular Movies - Top Rated");
               }
               break;
             case R.id.action_favorite:
@@ -191,6 +196,7 @@ public class MainActivity extends AppCompatActivity {
                     displayMode = FAVORITES;
                     gridView.setAdapter(favMovieAdapter);
                     gridView.invalidate();
+                    setTitle("Popular Movies - Favorites");
                 }
               break;
           }
