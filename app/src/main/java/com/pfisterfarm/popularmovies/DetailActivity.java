@@ -36,7 +36,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.pfisterfarm.popularmovies.MainActivity.favMovies;
-import static com.pfisterfarm.popularmovies.MainActivity.trailers;
 
 
 public class DetailActivity extends AppCompatActivity implements TrailerAdapter.ListItemClickListener {

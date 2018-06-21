@@ -47,8 +47,6 @@ public class MainActivity extends AppCompatActivity {
   static ArrayList<Movie> popularMovies;
   static ArrayList<Movie> topRatedMovies;
   static ArrayList<Movie> favMovies;
-  static ArrayList<Trailer> trailers;
-  static ArrayList<Review> reviews;
 
   tmdbInterface tmdbService = tmdbClient.getClient().create(tmdbInterface.class);
 
@@ -60,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
   private FavDatabase mDb;
 
-  int displayMode = POPULAR;
+  static int displayMode;
   static boolean dataLoaded = false;
 
   private static final String displayModeStr = "displayMode";
@@ -68,8 +66,6 @@ public class MainActivity extends AppCompatActivity {
   private static final String topRatedStr = "top_rated";
   private static final String scrollPosStr = "scroll_pos";
   private static final String logTag = "POPMOVIES";
-  private static final String trailerStr = "trailer";
-  private static final String reviewStr = "review";
   private static final String movieIdStr = "movie_id";
   private static final String favoritesStr = "favs";
   private static final String dataLoadedStr = "dataLoaded";
@@ -86,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
 
     mDb = FavDatabase.getInstance(getApplicationContext());
 
+    BottomNavigationView bottNav = (BottomNavigationView) findViewById(R.id.bottom_nav);
+
     // get a broadcast receiver ready to check if data needs to be loaded when
       // network has just become available
     connectIntent = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
@@ -96,15 +94,38 @@ public class MainActivity extends AppCompatActivity {
               !(((savedInstanceState.containsKey(displayModeStr)) &&
                       (savedInstanceState.containsKey(popularStr)) &&
                       (savedInstanceState.containsKey(topRatedStr))))) {
-          popularMovies = new ArrayList<Movie>();
-          topRatedMovies = new ArrayList<Movie>();
-          favMovies = new ArrayList<Movie>();
-          trailers = new ArrayList<Trailer>();
+          // I encountered a strange bug. Once the app loaded and you pressed the back
+          // button to return to the launcher screen, then launched the app again,
+          // onCreate got called again, savedInstanceState was null, so the app thought
+          // it was the first time through and created new ArrayLists, even though all the
+          // data was already there which wiped them all out. The data was deleted, but the
+          // boolean to check if the data was already loaded was 'true', so no data in the app
+          // and no way it was going to be able to load it. The Popular and Top Rated tabs
+          // were blank (no crashes though!) and Favorites appeared as normal. It didn't
+          // seem to do this if you hit the home button and relaunched.
+          if (popularMovies == null) {  // if popularMovies already has data, don't wipe it
+              popularMovies = new ArrayList<Movie>();
+              displayMode = POPULAR;    // if savedInstanceState and popularMoves are both null
+                                        // it's probably safe to assume this is the very first
+                                        // time through
+          } else {  // enable the button at the bottom instead
+              bottNav.getMenu().findItem(R.id.action_popular).setEnabled(true);
+          }
+          if (topRatedMovies == null) {    // same situation for top rated as for popular movies
+              topRatedMovies = new ArrayList<Movie>();
+          } else {
+              bottNav.getMenu().findItem(R.id.action_top_rated).setEnabled(true);
+          }
+          if (favMovies == null) {
+              favMovies = new ArrayList<Movie>();
+          }
 
           if (helpers.isOnline(getApplicationContext())) {
                 loadData();
           } else {
-                helpers.showOKAlertDialog(this, R.string.no_network_title, R.string.no_network_text);
+                if (!dataLoaded) {
+                    helpers.showOKAlertDialog(this, R.string.no_network_title, R.string.no_network_text);
+                }
           }
       } else {
         displayMode = savedInstanceState.getInt(displayModeStr);
@@ -114,7 +135,6 @@ public class MainActivity extends AppCompatActivity {
         scrollState = savedInstanceState.getParcelable(scrollPosStr);
         dataLoaded = savedInstanceState.getBoolean(dataLoadedStr);
         gridView.onRestoreInstanceState(scrollState);
-        BottomNavigationView bottNav = (BottomNavigationView) findViewById(R.id.bottom_nav);
         if (popularMovies.size() > 0 && topRatedMovies.size() > 0) {
             bottNav.getMenu().findItem(R.id.action_popular).setEnabled(true);
             bottNav.getMenu().findItem(R.id.action_top_rated).setEnabled(true);
@@ -125,21 +145,23 @@ public class MainActivity extends AppCompatActivity {
       topRatedMovieAdapter = new MovieAdapter(this, topRatedMovies);
       favMovieAdapter = new MovieAdapter(this, favMovies);
 
-
       switch (displayMode) {
         case POPULAR:
             setTitle("Popular Movies - Popular");
           gridView.setAdapter(popularMovieAdapter);
+          bottNav.getMenu().findItem(R.id.action_popular).setChecked(true);
           break;
 
         case TOPRATED:
             setTitle("Popular Movies - Top Rated");
           gridView.setAdapter(topRatedMovieAdapter);
+          bottNav.getMenu().findItem(R.id.action_top_rated).setChecked(true);
           break;
 
         case FAVORITES:
             setTitle("Popular Movies - Favorites");
             gridView.setAdapter(favMovieAdapter);
+            bottNav.getMenu().findItem(R.id.action_favorite).setChecked(true);
             break;
 
       }
