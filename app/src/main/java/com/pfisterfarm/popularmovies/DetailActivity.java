@@ -231,25 +231,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         }
         return false;
     }
-//    public void checkIfFavorite(final long movieId) {
-//        // This method queries the favorites database to see if the movie has already been favorited.
-//        // Ideally, it would return a boolean value, but I can't figure out how to return a value from
-//        // an AppExecutor call. I have to call a separate method which modifies a member variable. This
-//        // seems like a kludge. Hopefully, I'll be able to correct this before submitting this project
-//        boolean result = false;
-//        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-//
-//            @Override
-//            public void run() {
-//                Movie checkMovie = mDb.movieDao().getMovie(movieId);
-//                setFavoriteFlag(checkMovie != null);
-//            }
-//        });
-//    }
-//
-//    public void setFavoriteFlag(boolean valueToSet) {
-//        favoritedFlag = valueToSet;
-//    }
+
 
     @Override
     public void onListItemClick(int clickItemIndex) {

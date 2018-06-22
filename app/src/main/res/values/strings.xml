@@ -12,4 +12,7 @@
     <string name="menu_favorites">Favorites</string>
     <string name="released_label">Released:</string>
     <string name="overview_label">Overview:</string>
+    <string name="popularMoviesTitle">Popular Movies - Popular</string>
+    <string name="topRatedMoviesTitle">Popular Movies - Top Rated</string>
+    <string name="favoriteMoviesTitle">Popular Movies - Favorites</string>
 </resources>

@@ -1,6 +1,5 @@
 package com.pfisterfarm.popularmovies;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.BroadcastReceiver;
@@ -27,19 +26,17 @@ import retrofit2.Callback;
 
 import com.pfisterfarm.popularmovies.models.FavDatabase;
 import com.pfisterfarm.popularmovies.models.FavsViewModel;
-import com.pfisterfarm.popularmovies.models.MovieDao;
 import com.pfisterfarm.popularmovies.models.Movie;
 import com.pfisterfarm.popularmovies.models.MovieAdapter;
 import com.pfisterfarm.popularmovies.models.Movies;
-import com.pfisterfarm.popularmovies.models.Review;
-import com.pfisterfarm.popularmovies.models.Trailer;
 import com.pfisterfarm.popularmovies.retrofit.tmdbInterface;
 import com.pfisterfarm.popularmovies.retrofit.tmdbClient;
 import com.pfisterfarm.popularmovies.utils.helpers;
 
 public class MainActivity extends AppCompatActivity {
 
-  private static final String sApiKey = BuildConfig.API_KEY;
+
+    private static final String sApiKey = BuildConfig.API_KEY;
   private static final int POPULAR = 0;
   private static final int TOPRATED = 1;
   private static final int FAVORITES = 2;
@@ -145,27 +142,6 @@ public class MainActivity extends AppCompatActivity {
       topRatedMovieAdapter = new MovieAdapter(this, topRatedMovies);
       favMovieAdapter = new MovieAdapter(this, favMovies);
 
-      switch (displayMode) {
-        case POPULAR:
-            setTitle("Popular Movies - Popular");
-          gridView.setAdapter(popularMovieAdapter);
-          bottNav.getMenu().findItem(R.id.action_popular).setChecked(true);
-          break;
-
-        case TOPRATED:
-            setTitle("Popular Movies - Top Rated");
-          gridView.setAdapter(topRatedMovieAdapter);
-          bottNav.getMenu().findItem(R.id.action_top_rated).setChecked(true);
-          break;
-
-        case FAVORITES:
-            setTitle("Popular Movies - Favorites");
-            gridView.setAdapter(favMovieAdapter);
-            bottNav.getMenu().findItem(R.id.action_favorite).setChecked(true);
-            break;
-
-      }
-      gridView.invalidate();    // force update on initial load
 
       gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                           @Override
@@ -202,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
                 displayMode = POPULAR;
                 gridView.setAdapter(popularMovieAdapter);
                 gridView.invalidate();
-                setTitle("Popular Movies - Popular");
+                setTitle(getString(R.string.popularMoviesTitle));
               }
               break;
             case R.id.action_top_rated:
@@ -210,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
                 displayMode = TOPRATED;
                 gridView.setAdapter(topRatedMovieAdapter);
                 gridView.invalidate();
-                setTitle("Popular Movies - Top Rated");
+                setTitle(getString(R.string.topRatedMoviesTitle));
               }
               break;
             case R.id.action_favorite:
@@ -218,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
                     displayMode = FAVORITES;
                     gridView.setAdapter(favMovieAdapter);
                     gridView.invalidate();
-                    setTitle("Popular Movies - Favorites");
+                    setTitle(getString(R.string.favoriteMoviesTitle));
                 }
               break;
           }
@@ -228,7 +204,30 @@ public class MainActivity extends AppCompatActivity {
 
       retrieveFavorites();
 
-    } catch (Exception e) {
+      switch (displayMode) {
+          case POPULAR:
+              setTitle(getString(R.string.popularMoviesTitle));
+              gridView.setAdapter(popularMovieAdapter);
+              bottNav.getMenu().findItem(R.id.action_popular).setChecked(true);
+              break;
+
+          case TOPRATED:
+                 setTitle(getString(R.string.topRatedMoviesTitle));
+                 gridView.setAdapter(topRatedMovieAdapter);
+                 bottNav.getMenu().findItem(R.id.action_top_rated).setChecked(true);
+                 break;
+
+           case FAVORITES:
+                 setTitle(getString(R.string.favoriteMoviesTitle));
+                 gridView.setAdapter(favMovieAdapter);
+                 bottNav.getMenu().findItem(R.id.action_favorite).setChecked(true);
+                 break;
+
+         }
+         gridView.invalidate();    // force update on initial load
+
+
+     } catch (Exception e) {
       e.printStackTrace();
     }
     }
@@ -242,6 +241,9 @@ public class MainActivity extends AppCompatActivity {
           public void onChanged(@Nullable List<Movie> movies) {
               favMovies.clear();
               favMovies.addAll(movies);
+              if (displayMode == FAVORITES) {
+                  gridView.setAdapter(favMovieAdapter);
+              }
           }
       });
     }
