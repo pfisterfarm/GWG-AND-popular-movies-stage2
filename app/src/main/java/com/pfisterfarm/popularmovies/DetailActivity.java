@@ -8,7 +8,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -94,7 +93,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             trailers = savedInstanceState.getParcelableArrayList(trailersStr);
             addTrailersToUI(this);
             reviews = savedInstanceState.getParcelableArrayList(reviewsStr);
-            addReviewToUI();
+            addReviewstoUI();
         }
 
         setTitle(detailMovie.getMovieTitle());
@@ -190,7 +189,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 reviews.clear();
                 reviews.addAll(returnList);
 
-                addReviewToUI();
+                addReviewstoUI();
             }
 
             @Override
@@ -201,7 +200,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         });
     }
 
-    private void addReviewToUI() {
+    private void addReviewstoUI() {
         mReviewsAdapter = new ReviewAdapter(reviews.size());
         mReviewsAdapter.setReviews(reviews);
         mReviewsRecycler.setAdapter(mReviewsAdapter);
